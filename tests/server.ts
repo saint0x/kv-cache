@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 // Configuration and Validation
-const DEEPSEEK_API_KEY = 'sk-e964a13149324e728e1db994a099ad31';
+const DEEPSEEK_API_KEY = //deepseek api key here
 const PORT = 3000;
 
 // Validate API key
