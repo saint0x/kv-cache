@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  
+  This is our linguistic -> tool mapping store that frontruns the inference.
+  Think of it as a cache of "known good" patterns that have successfully triggered
+  tool calls in the past. Each pattern becomes stronger with successful use.
+  
+  Key concepts:
+  - Patterns map natural language to specific tool calls
+  - Confidence scores adjust based on success/failure
+  - Variables capture dynamic parts of commands
+  - Type bindings ensure parameter safety
+  - Usage stats inform pattern strength
+-->
+<CommandMap version="1.0">
+    <!-- 
+      Pattern Groups help organize related commands
+      e.g., all file operations, all search patterns, etc.
+    -->
+    <PatternGroup type="file_operations">
+        <!-- 
+          Each pattern represents a successful tool calling template
+          The more it succeeds, the higher its confidence score
+        -->
+        <Pattern id="MOCK_FILE_SEARCH_1" confidence="0.95">
+            <Linguistic>
+                <!-- 
+                  The trigger is what we match against user input
+                  * represents variable capture points
+                -->
+                <Trigger>search for files containing *</Trigger>
+                <Variables>
+                    <Variable name="search_term" position="1">
+                        <Type>string</Type>
+                        <Description>The term to search for in files</Description>
+                    </Variable>
+                </Variables>
+                <!-- Examples help with pattern matching and documentation -->
+                <Examples>
+                    <Example>search for files containing TODO</Example>
+                    <Example>search for files containing FIXME</Example>
+                </Examples>
+            </Linguistic>
+
+            <ToolMapping>
+                <!-- Maps to our pretend gRPC tool service -->
+                <Service>MOCK_FileService</Service>
+                <Method>SearchFiles</Method>
+                <Parameters>
+                    <Parameter name="query" value="${search_term}"/>
+                    <Parameter name="case_sensitive" value="false"/>
+                </Parameters>
+            </ToolMapping>
+
+            <UsageStats>
+                <SuccessCount>47</SuccessCount>
+                <FailureCount>2</FailureCount>
+                <LastUsed>2024-03-14T15:30:00Z</LastUsed>
+                <AverageLatency>120ms</AverageLatency>
+            </UsageStats>
+        </Pattern>
+
+        <!-- Another pattern example showing different structure -->
+        <Pattern id="MOCK_FILE_CREATE_1" confidence="0.88">
+            <Linguistic>
+                <Trigger>create new file * with content *</Trigger>
+                <Variables>
+                    <Variable name="file_path" position="1">
+                        <Type>string</Type>
+                        <Description>Path where to create the file</Description>
+                    </Variable>
+                    <Variable name="content" position="2">
+                        <Type>string</Type>
+                        <Description>Initial content of the file</Description>
+                    </Variable>
+                </Variables>
+            </Linguistic>
+
+            <ToolMapping>
+                <Service>MOCK_FileService</Service>
+                <Method>CreateFile</Method>
+                <Parameters>
+                    <Parameter name="path" value="${file_path}"/>
+                    <Parameter name="initial_content" value="${content}"/>
+                </Parameters>
+            </ToolMapping>
+
+            <UsageStats>
+                <SuccessCount>23</SuccessCount>
+                <FailureCount>3</FailureCount>
+                <LastUsed>2024-03-14T14:20:00Z</LastUsed>
+                <AverageLatency>85ms</AverageLatency>
+            </UsageStats>
+        </Pattern>
+    </PatternGroup>
+
+    <!-- Different pattern group for different domain -->
+    <PatternGroup type="code_analysis">
+        <Pattern id="MOCK_CODE_LINT_1" confidence="0.92">
+            <Linguistic>
+                <Trigger>lint the * file</Trigger>
+                <Variables>
+                    <Variable name="target_file" position="1">
+                        <Type>string</Type>
+                        <Description>File to analyze</Description>
+                    </Variable>
+                </Variables>
+            </Linguistic>
+
+            <ToolMapping>
+                <Service>MOCK_CodeService</Service>
+                <Method>LintFile</Method>
+                <Parameters>
+                    <Parameter name="file_path" value="${target_file}"/>
+                    <Parameter name="strict_mode" value="true"/>
+                </Parameters>
+            </ToolMapping>
+
+            <UsageStats>
+                <SuccessCount>156</SuccessCount>
+                <FailureCount>12</FailureCount>
+                <LastUsed>2024-03-14T15:45:00Z</LastUsed>
+                <AverageLatency>250ms</AverageLatency>
+            </UsageStats>
+        </Pattern>
+    </PatternGroup>
+
+    <!-- 
+      Global statistics help with pattern management
+      and optimization decisions
+    -->
+    <GlobalStats>
+        <TotalPatterns>35</TotalPatterns>
+        <HighConfidencePatterns>28</HighConfidencePatterns>
+        <LastUpdate>2024-03-14T15:45:00Z</LastUpdate>
+        <CacheHitRate>0.85</CacheHitRate>
+    </GlobalStats>
+</CommandMap>

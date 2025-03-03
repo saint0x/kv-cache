@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package tool_validation;
+
+// Service for validating tool executions and pattern matches
+service ValidationService {
+    // Validate a tool execution result
+    rpc ValidateToolExecution (ValidationRequest) returns (ValidationResult);
+    // Validate a pattern match
+    rpc ValidatePatternMatch (PatternMatchRequest) returns (PatternMatchResult);
+    // Validate context consistency
+    rpc ValidateContext (ContextValidationRequest) returns (ContextValidationResult);
+}
+
+// Request to validate a tool execution
+message ValidationRequest {
+    string tool_id = 1;
+    string execution_id = 2;
+    ExecutionResult execution_result = 3;
+    PerformanceMetrics performance = 4;
+    UserContext user_context = 5;
+}
+
+message ExecutionResult {
+    bool completed = 1;
+    string output = 2;
+    repeated string errors = 3;
+    SystemState system_state = 4;
+}
+
+message PerformanceMetrics {
+    int64 execution_time_ms = 1;
+    int64 memory_usage_bytes = 2;
+    float cpu_usage_percent = 3;
+    string latency = 4;
+}
+
+message UserContext {
+    string user_intent = 1;
+    bool user_correction_needed = 2;
+    repeated string context_types = 3;
+    map<string, string> preferences = 4;
+}
+
+message SystemState {
+    string current_state = 1;
+    repeated string active_tools = 2;
+    map<string, string> environment = 3;
+}
+
+// Response with validation result
+message ValidationResult {
+    bool is_valid = 1;
+    float confidence_score = 2;
+    repeated ValidationError errors = 3;
+    ValidationMetrics metrics = 4;
+}
+
+message ValidationError {
+    string error_code = 1;
+    string message = 2;
+    string component = 3;
+    Severity severity = 4;
+
+    enum Severity {
+        INFO = 0;
+        WARNING = 1;
+        ERROR = 2;
+        CRITICAL = 3;
+    }
+}
+
+message ValidationMetrics {
+    bool performance_within_bounds = 1;
+    bool context_consistent = 2;
+    bool pattern_valid = 3;
+    bool user_intent_satisfied = 4;
+}
+
+// Request to validate a pattern match
+message PatternMatchRequest {
+    string pattern_id = 1;
+    string input_text = 2;
+    map<string, string> variables = 3;
+    float current_confidence = 4;
+}
+
+message PatternMatchResult {
+    bool is_match = 1;
+    float match_quality = 2;
+    map<string, string> extracted_variables = 3;
+    repeated string suggested_improvements = 4;
+}
+
+// Request to validate context consistency
+message ContextValidationRequest {
+    string context_id = 1;
+    repeated string active_context_types = 2;
+    map<string, string> type_bindings = 3;
+    SystemState current_state = 4;
+}
+
+message ContextValidationResult {
+    bool is_consistent = 1;
+    repeated ContextViolation violations = 2;
+    map<string, string> suggested_fixes = 3;
+}
+
+message ContextViolation {
+    string violation_type = 1;
+    string description = 2;
+    string component = 3;
+    string fix_suggestion = 4;
+} 

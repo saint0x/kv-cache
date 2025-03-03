@@ -1,0 +1,22 @@
+{
+  "name": "llm-tool-calling-test-server",
+  "version": "1.0.0",
+  "description": "Test server for LLM function calling pipeline",
+  "main": "server.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run server.ts",
+    "dev": "bun --watch run server.ts",
+    "test": "bun run test.ts"
+  },
+  "dependencies": {
+    "hono": "^3.0.0",
+    "@hono/node-server": "^1.0.0",
+    "deepseek-ai": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "bun-types": "latest"
+  }
+} 

@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package tool_update;
+
+// Service for updating command map and context tree
+service UpdateService {
+    // Update command map with new pattern or update existing pattern
+    rpc UpdateCommandMap (CommandMapUpdateRequest) returns (CommandMapUpdateResult);
+    // Update context tree with new state
+    rpc UpdateContextTree (ContextTreeUpdateRequest) returns (ContextTreeUpdateResult);
+    // Atomic update of both command map and context tree
+    rpc AtomicUpdate (AtomicUpdateRequest) returns (AtomicUpdateResult);
+}
+
+// Request to update command map
+message CommandMapUpdateRequest {
+    string pattern_id = 1;
+    PatternUpdate pattern = 2;
+    ValidationInfo validation = 3;
+    UpdateMetrics metrics = 4;
+}
+
+message PatternUpdate {
+    string linguistic_pattern = 1;
+    repeated Variable variables = 2;
+    ToolMapping tool_mapping = 3;
+    UsageStats stats = 4;
+    float confidence_score = 5;
+}
+
+message Variable {
+    string name = 1;
+    string type = 2;
+    int32 position = 3;
+    string description = 4;
+}
+
+message ToolMapping {
+    string service = 1;
+    string method = 2;
+    map<string, string> parameters = 3;
+}
+
+message UsageStats {
+    int32 success_count = 1;
+    int32 failure_count = 2;
+    string last_used = 3;
+    string average_latency = 4;
+}
+
+message ValidationInfo {
+    bool execution_successful = 1;
+    bool pattern_matched = 2;
+    bool context_consistent = 3;
+    string validation_id = 4;
+}
+
+message UpdateMetrics {
+    int64 update_timestamp = 1;
+    string update_source = 2;
+    float confidence_delta = 3;
+    repeated string affected_patterns = 4;
+}
+
+// Response for command map update
+message CommandMapUpdateResult {
+    bool success = 1;
+    string updated_pattern_id = 2;
+    float new_confidence = 3;
+    repeated UpdateError errors = 4;
+}
+
+// Request to update context tree
+message ContextTreeUpdateRequest {
+    string context_id = 1;
+    ContextUpdate context = 2;
+    ValidationInfo validation = 3;
+    UpdateMetrics metrics = 4;
+}
+
+message ContextUpdate {
+    repeated string active_context_types = 1;
+    map<string, ToolContext> tool_contexts = 2;
+    TypeBindings type_bindings = 3;
+    UserContextUpdate user_context = 4;
+    LearningContext learning = 5;
+}
+
+message ToolContext {
+    repeated string required_args = 1;
+    repeated string optional_args = 2;
+    map<string, string> arg_types = 3;
+    repeated string success_patterns = 4;
+}
+
+message TypeBindings {
+    repeated string valid_tools = 1;
+    map<string, string> common_args = 2;
+    map<string, string> validations = 3;
+}
+
+message UserContextUpdate {
+    repeated string preferred_patterns = 1;
+    map<string, string> common_args = 2;
+    map<string, float> success_rates = 3;
+}
+
+message LearningContext {
+    float pattern_strength_threshold = 1;
+    int32 min_success_count = 2;
+    float adaptation_rate = 3;
+    repeated LearningEvent recent_learnings = 4;
+}
+
+message LearningEvent {
+    string pattern_id = 1;
+    float confidence_delta = 2;
+    string timestamp = 3;
+}
+
+// Response for context tree update
+message ContextTreeUpdateResult {
+    bool success = 1;
+    string updated_context_id = 2;
+    repeated UpdateError errors = 3;
+    map<string, string> updated_bindings = 4;
+}
+
+// Request for atomic update of both stores
+message AtomicUpdateRequest {
+    CommandMapUpdateRequest command_map_update = 1;
+    ContextTreeUpdateRequest context_tree_update = 2;
+    string transaction_id = 3;
+}
+
+// Response for atomic update
+message AtomicUpdateResult {
+    bool success = 1;
+    string transaction_id = 2;
+    CommandMapUpdateResult command_map_result = 3;
+    ContextTreeUpdateResult context_tree_result = 4;
+    repeated UpdateError errors = 5;
+}
+
+message UpdateError {
+    string error_code = 1;
+    string message = 2;
+    string component = 3;
+    bool is_recoverable = 4;
+    
+    enum ErrorType {
+        VALIDATION_ERROR = 0;
+        CONSISTENCY_ERROR = 1;
+        CONCURRENCY_ERROR = 2;
+        SYSTEM_ERROR = 3;
+    }
+    ErrorType type = 5;
+} 

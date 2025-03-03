@@ -1,0 +1,130 @@
+{
+    "metadata": {
+        "description": "Dynamic State and Type Management - maintains runtime context and type relationships for tool selection and validation",
+        "version": "1.0",
+        "last_updated": "2024-03-14T15:45:00Z"
+    },
+    
+    "current_state": {
+        "active_context_types": ["file_operation", "code_analysis"],
+        "recent_success": true,
+        "last_tool_call": {
+            "tool": "MOCK_FileService.SearchFiles",
+            "timestamp": "2024-03-14T15:44:55Z",
+            "success": true
+        }
+    },
+
+    "tool_contexts": {
+        "MOCK_FileService": {
+            "methods": {
+                "SearchFiles": {
+                    "required_args": ["query"],
+                    "optional_args": ["case_sensitive"],
+                    "arg_types": {
+                        "query": "string",
+                        "case_sensitive": "boolean"
+                    },
+                    "success_patterns": ["MOCK_FILE_SEARCH_1"],
+                    "usage_stats": {
+                        "call_count": 49,
+                        "success_rate": 0.95,
+                        "avg_latency": "120ms"
+                    }
+                },
+                "CreateFile": {
+                    "required_args": ["path", "initial_content"],
+                    "optional_args": [],
+                    "arg_types": {
+                        "path": "string",
+                        "initial_content": "string"
+                    },
+                    "success_patterns": ["MOCK_FILE_CREATE_1"],
+                    "usage_stats": {
+                        "call_count": 26,
+                        "success_rate": 0.88,
+                        "avg_latency": "85ms"
+                    }
+                }
+            },
+            "service_stats": {
+                "total_calls": 75,
+                "uptime": "99.9%",
+                "last_error": "2024-03-13T10:20:00Z"
+            }
+        },
+        "MOCK_CodeService": {
+            "methods": {
+                "LintFile": {
+                    "required_args": ["file_path"],
+                    "optional_args": ["strict_mode"],
+                    "arg_types": {
+                        "file_path": "string",
+                        "strict_mode": "boolean"
+                    },
+                    "success_patterns": ["MOCK_CODE_LINT_1"],
+                    "usage_stats": {
+                        "call_count": 168,
+                        "success_rate": 0.92,
+                        "avg_latency": "250ms"
+                    }
+                }
+            },
+            "service_stats": {
+                "total_calls": 168,
+                "uptime": "99.95%",
+                "last_error": "2024-03-12T08:15:00Z"
+            }
+        }
+    },
+
+    "type_bindings": {
+        "file_operation": {
+            "valid_tools": ["MOCK_FileService.SearchFiles", "MOCK_FileService.CreateFile"],
+            "common_args": {
+                "path": {
+                    "type": "string",
+                    "validation": "must_be_valid_path"
+                },
+                "content": {
+                    "type": "string",
+                    "max_length": 1048576
+                }
+            }
+        },
+        "code_analysis": {
+            "valid_tools": ["MOCK_CodeService.LintFile"],
+            "common_args": {
+                "file_path": {
+                    "type": "string",
+                    "validation": "must_be_valid_file"
+                }
+            }
+        }
+    },
+
+    "user_context": {
+        "preferred_patterns": ["MOCK_FILE_SEARCH_1"],
+        "common_args": {
+            "strict_mode": true,
+            "case_sensitive": false
+        },
+        "success_rate": {
+            "file_operations": 0.93,
+            "code_analysis": 0.89
+        }
+    },
+
+    "learning_context": {
+        "pattern_strength_threshold": 0.85,
+        "min_success_count": 10,
+        "adaptation_rate": 0.05,
+        "recent_learnings": [
+            {
+                "pattern_id": "MOCK_FILE_SEARCH_1",
+                "confidence_delta": 0.02,
+                "timestamp": "2024-03-14T15:30:00Z"
+            }
+        ]
+    }
+}
