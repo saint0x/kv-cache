@@ -116,6 +116,7 @@ LLM consistently referenced and suggested updates to:
   - Exact match: 27.5s
   - Pattern variation: 41.5s
   - Word numbers: 48.0s
+  - (More a DeepSeek thing than the implementation -- again, not an antisignal)
 
 ### Conclusions
 
